@@ -24,7 +24,7 @@ if command -v terminal-notifier &>/dev/null; then
     terminal-notifier -title "ffmpeg" -message "START TIME: $(date)"
 fi
 
-ffmpeg -loglevel warning -y -r "$FRAME_RATE" -i "$INPUT_PATH" -movflags +faststart -r "$FRAME_RATE" "$OUTPUT_PATH"
+ffmpeg -y -r "$FRAME_RATE" -i "$INPUT_PATH" -c:v libx264 -crf 24 -preset slow -movflags faststart -r "$FRAME_RATE" "$OUTPUT_PATH"
 
 exitcode=$?
 

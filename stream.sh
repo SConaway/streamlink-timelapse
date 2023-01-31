@@ -36,7 +36,7 @@ fi
 
 # TODO: set this to be a week
 # while true; do
-streamlink --loglevel warning --stdout "$URL" best | ffmpeg -loglevel warning -y -i pipe:0 -r "$FRAME_RATE" -t 02:00:00 -vf drawtext='fontfile=FreeSans.ttf:text=%{localtime\\:%b %d %Y %I %p}' "$OUTPUT_PATH"
+streamlink --loglevel warning --stdout "$URL" best | ffmpeg -loglevel warning -y -i pipe:0 -r "$FRAME_RATE" -t 01:00:00 -vf drawtext='fontfile=FreeSans.ttf:text=%{localtime\\:%b %d %Y %I %p}' "$OUTPUT_PATH"
 # done
 
 # print end time in green on red
