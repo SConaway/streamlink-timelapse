@@ -20,6 +20,6 @@ RUN pip install -r /app/requirements.txt
 
 COPY *.sh /app/
 
-COPY main.py /app/
+COPY *.py /app/
 
-ENTRYPOINT ["python", "/app/main.py"]
+ENTRYPOINT ["python"]
