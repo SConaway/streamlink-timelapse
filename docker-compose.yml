@@ -7,7 +7,7 @@ services:
     # set env from .env
 
     build: .
-    command: stream
+    command: stream.py
     env_file: .env
     volumes:
       - "/srv/streamlink-timelapse-big/tmp:/tmp"
@@ -18,7 +18,7 @@ services:
     # set env from .env
 
     build: .
-    command: process
+    command: process.py
     env_file: .env
     volumes:
       - "/srv/streamlink-timelapse-big/tmp:/tmp"
