@@ -30,11 +30,13 @@ exitcode=$?
 
 if [ $exitcode -ne 0 ]; then
     echo "ffmpeg exited with code $exitcode"
-    terminal-notifier -title "ffmpeg" -message "ffmpeg exited with code $exitcode at $(date)"
+    if command -v terminal-notifier &>/dev/null; then
+        terminal-notifier -title "ffmpeg" -message "ffmpeg exited with code $exitcode at $(date)"
+    fi
     exit $exitcode
-else
+    # else
     # remove file and file.done
-    rm -f "$INPUT_PATH" "$INPUT_PATH.done"
+    # rm -f "$INPUT_PATH" "$INPUT_PATH.done"
 fi
 
 # print end time in red on green

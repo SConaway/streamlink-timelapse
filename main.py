@@ -10,6 +10,7 @@ import sys
 import subprocess
 from dotenv import load_dotenv
 import time
+import b2sdk.v2 as b2
 
 
 def help():
@@ -25,6 +26,9 @@ def get_config():
     # 'tmp_dir': './tmp',
     # 'out_dir': './out'
     # 'check_interval': 5,  # minutes
+    # 'b2_application_key_id': "<>",
+    # 'b2_application_key': "<>",
+    # "b2_bucket_name": "<>"
 
     env = [
         ('final_frame_rate', 30),  # fps
@@ -33,6 +37,9 @@ def get_config():
         ('out_dir', './out'),       # path
         ('url', None),             # url
         ('check_interval', 5),     # minutes
+        ('b2_application_key_id', None),  # b2 application key id
+        ('b2_application_key', None),     # b2 application key
+        ('b2_bucket_name', None),         # b2 bucket name
     ]
 
     for key, default in env:
@@ -94,7 +101,7 @@ def stream(config):
         # break
 
 
-def process(config, all=False, file=None):
+def process(config, bucket, all=False, file=None):
     # list files in tmp_dir
     # for each file print name
     dir = os.listdir(config['tmp_dir'])
@@ -107,16 +114,28 @@ def process(config, all=False, file=None):
         files_to_process = [f.split('.done')[0]
                             for f in dir if f.endswith('.ts.done')]
 
-    print(files_to_process)
+    print('processing:', files_to_process)
 
     for file in files_to_process:
-        subprocess.run(
-            ['bash', 'ffmpeg.sh', str(config['final_frame_rate']), f"{config['tmp_dir']}/{file}", f"{config['out_dir']}/{file.replace('.ts', '.mp4')}"])
+        newName = file.replace('.ts', '.mp4')
+        p = subprocess.run(
+            ['bash', 'ffmpeg.sh', str(config['final_frame_rate']), f"{config['tmp_dir']}/{file}", f"{config['out_dir']}/{newName}"])
+
+        # if success
+        if p.returncode == 0:
+            # uploaded_file =
+            bucket.upload_local_file(
+                local_file=f"{newName}",
+                file_name=newName,
+                # file_infos=metadata,
+            )
+
+            # print(uploaded_file)
 
         # remove file and its .done file if exists
-        # os.remove(f"{config['tmp_dir']}/{file}")
-        # if os.path.exists(f"{config['tmp_dir']}/{file}.done"):
-        #     os.remove(f"{config['tmp_dir']}/{file}.done")
+        os.remove(f"{config['tmp_dir']}/{file}")
+        if os.path.exists(f"{config['tmp_dir']}/{file}.done"):
+            os.remove(f"{config['tmp_dir']}/{file}.done")
 
 
 config = get_config()
@@ -134,8 +153,15 @@ if sys.argv[1] == 'stream':
     stream(config)
 elif sys.argv[1] == 'process':
     # process every check_interval minutes
+    info = b2.InMemoryAccountInfo()
+    b2_api = b2.B2Api(info)
+    b2_api.authorize_account(
+        "production", config['b2_application_key_id'], config['b2_application_key'])
+
+    bucket = b2_api.get_bucket_by_name(config['b2_bucket_name'])
+
     while True:
-        process(config, all=False)
+        process(config, all=False, bucket=bucket)
         print(f"Sleeping for {config['check_interval']} minutes")
         time.sleep(config['check_interval']*60)
 elif sys.argv[1] == 'check':
