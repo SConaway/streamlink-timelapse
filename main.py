@@ -149,6 +149,8 @@ def process(config, bucket, all=False, file=None):
             if os.path.exists(f"{config['tmp_dir']}/{file}.done"):
                 os.remove(f"{config['tmp_dir']}/{file}.done")
 
+            os.remove(f"{config['out_dir']}/{newName}")
+
 
 config = get_config()
 

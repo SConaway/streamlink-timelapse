@@ -1,0 +1,25 @@
+version: '3.8'
+
+services: 
+  stream:
+    # build from ./
+    # command = stream
+    # set env from .env
+
+    build: .
+    command: stream
+    env_file: .env
+    volumes:
+      - "/srv/streamlink-timelapse-big/tmp:/tmp"
+      - "/srv/streamlink-timelapse-big/out:/out"
+  process:
+    # build from ./
+    # command = process
+    # set env from .env
+
+    build: .
+    command: process
+    env_file: .env
+    volumes:
+      - "/srv/streamlink-timelapse-big/tmp:/tmp"
+      - "/srv/streamlink-timelapse-big/out:/out"
