@@ -1,0 +1,10 @@
+venv/
+tmp/
+
+**/.DS_Store
+
+**/*.mp4
+
+*.env
+
+*.md

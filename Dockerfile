@@ -2,6 +2,8 @@
 
 FROM python:3.11-slim-bullseye
 
+WORKDIR /app
+
 # RUN apt update && apt install -y python
 RUN apt update && \
     apt install -y --no-install-recommends ffmpeg && \
@@ -12,12 +14,12 @@ RUN apt update && \
 
 # RUN /setup.sh
 
-COPY requirements.txt /requirements.txt
+COPY requirements.txt /app/requirements.txt
 
-RUN pip install -r /requirements.txt
+RUN pip install -r /app/requirements.txt
 
-COPY *.sh /
+COPY *.sh /app/
 
-COPY main.py /
+COPY main.py /app/
 
-ENTRYPOINT ["python", "/main.py"]
+ENTRYPOINT ["python", "/app/main.py"]

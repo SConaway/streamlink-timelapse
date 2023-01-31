@@ -33,8 +33,8 @@ def get_config():
     env = [
         ('final_frame_rate', 30),  # fps
         ('frame_interval', 60),    # seconds
-        ('tmp_dir', './tmp'),       # path
-        ('out_dir', './out'),       # path
+        ('tmp_dir', '/tmp'),       # path
+        ('out_dir', '/out'),       # path
         ('url', None),             # url
         ('check_interval', 5),     # minutes
         ('b2_application_key_id', None),  # b2 application key id
@@ -44,7 +44,14 @@ def get_config():
 
     for key, default in env:
         if key.upper() in os.environ:
-            config[key] = os.environ[key.upper()]
+            v = os.environ[key.upper()]
+            print(f"Using environment variable {key}: {v}")
+            if v.replace('.', '').isnumeric():
+                if '.' in v:
+                    v = float(v)
+                else:
+                    v = int(v)
+            config[key] = v
         else:
             if default:
                 print(f"Using default value for {key}: {default}")
@@ -80,7 +87,7 @@ def stream(config):
     while True:
         date = datetime.datetime.now().strftime('%Y-%m-%dT%H-%M-%S')
         p = subprocess.run(
-            ['bash', 'stream.sh', str(config['frame_rate']), f"./tmp/{date}.ts", config['url']])
+            ['bash', 'stream.sh', str(config['frame_rate']), f"{config['tmp_dir']}/{date}.ts", config['url']])
 
         print(p)
         if p.returncode != 0:
@@ -88,7 +95,7 @@ def stream(config):
             sys.exit(1)
 
         # create file named date.ts.done, write done at current time
-        with open(f"./tmp/{date}.ts.done", "w") as f:
+        with open(f"{config['tmp_dir']}/{date}.ts.done", "w") as f:
             f.write(
                 f"done at {datetime.datetime.now().strftime('%Y-%m-%dT%H-%M-%S')}")
 
@@ -102,6 +109,11 @@ def stream(config):
 
 
 def process(config, bucket, all=False, file=None):
+
+    # print current date/time in blue text on a yellow background
+    print('\033[43m\033[34mStart Time:' + datetime.datetime.now().strftime(
+        '%Y-%m-%dT%H-%M-%S') + '\033[0m')
+
     # list files in tmp_dir
     # for each file print name
     dir = os.listdir(config['tmp_dir'])
@@ -125,17 +137,17 @@ def process(config, bucket, all=False, file=None):
         if p.returncode == 0:
             # uploaded_file =
             bucket.upload_local_file(
-                local_file=f"{newName}",
+                local_file=f"{config['out_dir']}/{newName}",
                 file_name=newName,
                 # file_infos=metadata,
             )
 
             # print(uploaded_file)
 
-        # remove file and its .done file if exists
-        os.remove(f"{config['tmp_dir']}/{file}")
-        if os.path.exists(f"{config['tmp_dir']}/{file}.done"):
-            os.remove(f"{config['tmp_dir']}/{file}.done")
+            # remove file and its .done file if exists
+            os.remove(f"{config['tmp_dir']}/{file}")
+            if os.path.exists(f"{config['tmp_dir']}/{file}.done"):
+                os.remove(f"{config['tmp_dir']}/{file}.done")
 
 
 config = get_config()
