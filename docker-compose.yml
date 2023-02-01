@@ -8,6 +8,7 @@ services:
     build: .
     command: stream.py
     env_file: .env
+    tty: True
     volumes:
       - "/srv/streamlink-timelapse-big/temp:/temp"
       - "/srv/streamlink-timelapse-big/output:/output"
@@ -19,6 +20,7 @@ services:
     build: .
     command: process.py
     env_file: .env
+    tty: True
     volumes:
       - "/srv/streamlink-timelapse-big/temp:/temp"
       - "/srv/streamlink-timelapse-big/output:/output"
