@@ -103,6 +103,10 @@ def process(config, bucket, all=False, file=None):
             os.remove(f"{config['out_dir']}/{newName}")
 
 
+# wait some time for the stream script to
+# mark any files with a `.done` file as done
+time.sleep(5)
+
 info = b2.InMemoryAccountInfo()
 b2_api = b2.B2Api(info)
 b2_api.authorize_account(

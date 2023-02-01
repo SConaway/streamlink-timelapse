@@ -5,21 +5,21 @@ services:
     # build from ./
     # command = stream
     # set env from .env
-
     build: .
     command: stream.py
     env_file: .env
     volumes:
-      - "/srv/streamlink-timelapse-big/tmp:/tmp"
-      - "/srv/streamlink-timelapse-big/out:/out"
+      - "/srv/streamlink-timelapse-big/temp:/temp"
+      - "/srv/streamlink-timelapse-big/output:/output"
+      - "/etc/localtime:/etc/localtime:ro"
   process:
     # build from ./
     # command = process
     # set env from .env
-
     build: .
     command: process.py
     env_file: .env
     volumes:
-      - "/srv/streamlink-timelapse-big/tmp:/tmp"
-      - "/srv/streamlink-timelapse-big/out:/out"
+      - "/srv/streamlink-timelapse-big/temp:/temp"
+      - "/srv/streamlink-timelapse-big/output:/output"
+      - "/etc/localtime:/etc/localtime:ro"
