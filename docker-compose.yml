@@ -5,7 +5,8 @@ services:
     # build from ./
     # command = stream
     # set env from .env
-    build: .
+    # build: .
+    image: sconaway/streamlink-timelapse
     command: stream.py
     env_file: .env
     tty: True
@@ -17,7 +18,8 @@ services:
     # build from ./
     # command = process
     # set env from .env
-    build: .
+    # build: .
+    image: sconaway/streamlink-timelapse
     command: process.py
     env_file: .env
     tty: True
